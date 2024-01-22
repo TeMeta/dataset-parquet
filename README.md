@@ -30,7 +30,7 @@ It adds file and columnar metadata that complete the description of dataset stru
 
 The model used for Dataset-JSON metadata is ODMv2, which shares entities with specifications, data collection, and submission metadata.
 
-Data is included in Dataset-JSON as a `odm:ItemGroupData` with `.items` as an array of arrays or list of lists.
+As well as file and basic `odm:ItemDef` column metadata, data is included in Dataset-JSON as a `odm:ItemGroupData` with `.itemData` as an array of arrays or list of lists.
 
 A disadvantage of JSON is efficiency for large datasets. This is where Parquet shines.
 
@@ -42,7 +42,7 @@ CDISC Maxi: full ODMv1 or ODMv2 dataset specification including VLM (`odm:ItemRe
 ### Metadata header pointing to Parquet or vice versa
 If Parquet metadata includes a reference to specification URL, parquet file can include this and be self-descriptive.
 
-If not, a change is needed to Dataset-JSON to allow a URL to Parquet file as an alternative to the `ItemGroupData` list of lists
+If not, a change is needed to Dataset-JSON to allow a URL to Parquet file as an alternative to the `ItemData` list of lists
 
 # Parquet metadata
 Using Arrow as a handling medium adds schema support to Parquet
@@ -70,23 +70,27 @@ Overall: provide a shared reference for CDISC parquet handling
 
 
 # Data Types Comparison
-| Data Type        | JSON                 | ODMv2 / Dataset-JSON  | PyArrow                | Parquet                |
+| Data Type        | JSON                 | Dataset-JSON ItemType | PyArrow                | Parquet                |
 |------------------|----------------------|-----------------------|------------------------|------------------------|
-| Null             | null                 |                       | pa.null()              | NA (Nullable fields)   |
-| Boolean          | true/false           |                       | pa.bool_()             | BOOLEAN                |
-| Integer          | Number               |                       | pa.int32(), pa.int64() | INT32, INT64            |
-| Float            | Number               |                       | pa.float32(), pa.float64() | FLOAT, DOUBLE         |
-| String           | String               |                       | pa.string()            | UTF8                   |
-| Array            | Array                |                       | pa.list_()             | LIST                   |
-| Object/Map       | Object               |                       | pa.map_()              | MAP                    |
-| Object/Struct    | Object               |                       | pa.struct()            | GROUP                  |
-| Timestamp        | String               |                       | pa.timestamp()         | TIMESTAMP              |
-| Date             | String               |                       | pa.date32(), pa.date64() | DATE                  |
-| Time             | String               |                       | pa.time32(), pa.time64() | TIME_MILLIS, TIME_MICROS|
-| Decimal          | Number               |                       | pa.decimal()           | DECIMAL                |
-| Duration/Interval| String               |                       | pa.duration()           | INTERVAL               |
-| Binary           | String               |                       | pa.binary()            | BYTE_ARRAY             |
-| UUID             | String               |                       | pa.binary()            | FIXED_LEN_BYTE_ARRAY  |
+| Null             | null                 | N/A                   | pa.null()              | NA (Nullable fields)   |
+| Boolean          | true/false           | boolean               | pa.bool_()             | BOOLEAN                |
+| Integer          | Number               | integer               | pa.int32(), pa.int64() | INT32, INT64            |
+| Float            | Number               | float                 | pa.float32(), pa.float64() | FLOAT, DOUBLE         |
+| String           | String               | string                | pa.string()            | UTF8                   |
+| Array            | Array                | [JSON list] string    | pa.list_()             | LIST                   |
+| Object/Map       | Object               | [JSON dict] string    | pa.map_()              | MAP                    |
+| Object/Struct    | Object               | [JSON dict] string    | pa.struct()            | GROUP                  |
+| Timestamp        | String               | [ISO8601] string      | pa.timestamp()         | TIMESTAMP              |
+| Date             | String               | [ISO8601] string      | pa.date32(), pa.date64() | DATE                  |
+| Time             | String               | [ISO8601] string      | pa.time32(), pa.time64() | TIME_MILLIS, TIME_MICROS|
+| Decimal          | Number               | decimal               | pa.decimal()           | DECIMAL                |
+| Duration/Interval| String               | [ISO8601] string      | pa.duration()           | INTERVAL               |
+| Binary           | String               | N/A                   | pa.binary()            | BYTE_ARRAY             |
+| UUID             | String               | string                | pa.binary()            | FIXED_LEN_BYTE_ARRAY  |
+
+Date/Time as a numeric is epoch-dependent, changing according to platform. To get around this, always render as a string following ISO8601 conventions.
+
+Type and date/time handling is subject to change based on Dataset-JSON feedback.
 
 # References
 [CDISC Dataset JSON](https://www.cdisc.org/dataset-json)
