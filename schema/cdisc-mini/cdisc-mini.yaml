@@ -1,0 +1,159 @@
+---
+id: https://cdisc.org/dataset-json/model
+name: cdisc-mini
+description: >-
+  Basic metadata for Clinical Data Interchange Standards.
+  Simplified from CDISC ODMv2
+prefixes:
+  dataset: https://cdisc.org/dataset-json/model/
+  linkml: https://w3id.org/linkml/
+default_prefix: dataset
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      creationDateTime:
+        description: Time of creation of the file containing the document.
+        required: true
+      datasetJSONVersion:
+        description: Version of Dataset-JSON standard
+        required: true
+      fileOID:
+        description: A unique identifier for this file.
+      asOfDateTime:
+        description: The date/time at which the source database was queried in order to create this document.
+      originator:
+        description: The organization that generated the Dataset-JSON file.
+      sourceSystem:
+        description: The computer system or database management system that is the source of the information in this file.
+      sourceSystemVersion:
+        description: The version of the "SourceSystem" above.
+      clinicalData:
+        description: Contains datasets for clinical data across multiple subjects.
+      referenceData:
+        description: Contains datasets for non-subject data domains.
+
+  Dataset:
+    attributes:
+      studyOID:
+        description: See ODM definition for study OID (ODM/Study/@OID).
+      metaDataVersionOID:
+        description: See ODM definition for metadata version OID (ODM/Study/MetaDataVersion/@OID).
+      metaDataRef:
+        description: URL for a metadata file the describing the data.
+        range: uriorcurie
+      itemGroupData:
+        description: Object containing dataset information
+        required: true 
+
+  ClinicalData:
+    is_a: Dataset
+  
+  ReferenceData:
+    is_a: Dataset
+
+  ItemGroupData:
+    description: >-
+      Object corresponding to an individual dataset with basic inlined ItemGroupDef, ItemRef, and ItemDef metadata
+      There must be only one dataset per Dataset-JSON file.
+      The attribute name is OID of a described dataset, which must be the same as the OID of the corresponding itemGroupDef in the Define-XML file.
+    attributes:
+      id:
+        description: Object Identifier for this Dataset
+        required: true
+      records:
+        description: The total number of records in a dataset
+        required: true
+        range: integer
+      name:
+        description: Dataset name
+        required: true
+      label:
+        description: Dataset description
+        required: true
+      items:
+        description: Basic information about variables
+        required: true
+        range: ItemDef
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+      itemData:
+        description: Dataset data content JSON list of lists or URI to Parquet or CSV
+        required: true
+        any_of:
+          - range: View
+          - range: uriorcurie
+        inlined: true
+
+  ItemDef:
+    description: Column-level metadata
+    attributes:
+      OID:
+        description: OID of a variable (must correspond to the variable OID in the Define-XML file)
+        required: true
+      name:
+        description: Variable name
+        required: true
+      label:
+        description: Variable description
+        required: true
+      type:
+        description: >-
+          Type of the variable. Allowed values: "string", "integer", "decimal", "float", "double", "boolean". See ODM types for details.
+        required: true
+        range: DataTypesEnum
+      length:
+        description: Variable length
+        range: integer
+      displayFormat:
+        description: Display format supports data visualization of numeric float and date values.
+      keySequence:
+        description: >-
+          Indicates that this item is a key variable in the dataset structure. It also provides an ordering for the keys.
+        range: integer
+
+  View:
+    attributes:
+      itemData:
+        description: Data content as a list of lists
+        range: Observation
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+
+  Observation:
+    attributes:
+      itemData:
+        description: Data content as a list of values
+        required: true
+        range: ItemData
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+    
+  ItemData:
+    attributes:
+      value:
+        any_of:
+          - range: string
+          - range: integer
+          - range: decimal
+          - range: float
+          - range: double
+          - range: boolean
+        multivalued: true
+
+enums:
+  DataTypesEnum:
+    permissible_values:
+      string:
+      integer:
+      decimal:
+      float:
+      double:
+      boolean:

@@ -65,7 +65,7 @@ Overall: provide a shared reference for CDISC parquet handling
 
 1. Map Parquet data types and logical types to ODMv2 / Dataset-JSON types
 2. Comparison and mapping of Parquet, PyArrow, Dataset-JSON metadata entities
-2. Demonstrate simple Dataset-JSON support for Parquet by allowing ItemGroupData to be represented by a Parquet file (i.e. some kind of path to parquet file rather than list of lists)
+2. Demonstrate simple Dataset-JSON support for Parquet by allowing ItemGroupData or ItemData to be represented by a Parquet file (i.e. some kind of path to parquet file rather than list of lists)
 3. Demonstrate Dataset-JSON roundtripping via Parquet (Dataset-Parquet) using PyArrow and its custom metadata features
 
 
