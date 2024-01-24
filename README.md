@@ -17,9 +17,8 @@ However compared to the traditionally SAS-based and XML-based CDISC submission s
 * provenance, context
 * explicit link to specification / schema
 * descriptive column label
-* controlled terminology rule e.g. codelist name
-* format (SAS-specific)
-* informat (SAS-specific)
+* column display format
+* key columns
 
 Using CDISC ODMv2 objects in a Dataset-JSON style header file plugs this gap. We use JSON here, and this could just as easily be YAML, BSON, or RDF
 
@@ -39,10 +38,12 @@ CDISC Mini: simplified subset of the ODMv2 specification accompanies the Dataset
 
 CDISC Maxi: full ODMv1 or ODMv2 dataset specification including VLM (`odm:ItemRef`, `odm:WhereClauseDef`, Biomedical Concepts) and Methods (`odm:MethodDef`) that gets submitted as Define-XML, JSON, RDF, or XLSX.
 
-### Metadata header pointing to Parquet or vice versa
-If Parquet metadata includes a reference to specification URL, parquet file can include this and be self-descriptive.
+### Metadata header pointing to Parquet
+Parquet metadata does not include an explicit link to specification.
 
-If not, a change is needed to Dataset-JSON to allow a URL to Parquet file as an alternative to the `ItemData` list of lists
+A change is needed to Dataset-JSON to allow a explicit URL to Parquet file as an alternative to the `ItemData` list of lists.
+
+This approach changes the idea of Dataset-JSON from a data storage format to more of a pure manifest or data contract.
 
 # Parquet metadata
 Using Arrow as a handling medium adds schema support to Parquet
@@ -66,7 +67,7 @@ Overall: provide a shared reference for CDISC parquet handling
 1. Map Parquet data types and logical types to ODMv2 / Dataset-JSON types
 2. Comparison and mapping of Parquet, PyArrow, Dataset-JSON metadata entities
 2. Demonstrate simple Dataset-JSON support for Parquet by allowing ItemGroupData or ItemData to be represented by a Parquet file (i.e. some kind of path to parquet file rather than list of lists)
-3. Demonstrate Dataset-JSON roundtripping via Parquet (Dataset-Parquet) using PyArrow and its custom metadata features
+3. Demonstrate Dataset-JSON roundtripping via Parquet (Dataset-Parquet), using complementary JSON and/or PyArrow and its custom metadata features
 
 
 # Data Types Comparison
